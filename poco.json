@@ -1136,6 +1136,41 @@
      "valueSize": 34
     }
    }
+  },
+  {
+   "id": 34,
+   "type": "timeseries",
+   "title": "usb ssd fuse latency (listdir, 1 MiB read)",
+   "gridPos": {
+    "x": 0,
+    "y": 65,
+    "w": 24,
+    "h": 6
+   },
+   "datasource": {
+    "type": "prometheus",
+    "uid": "prom"
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "termux_fuse_listdir_seconds",
+     "legendFormat": "listdir"
+    },
+    {
+     "refId": "B",
+     "expr": "termux_fuse_read1m_seconds",
+     "legendFormat": "read 1 MiB"
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "min": 0
+    },
+    "overrides": []
+   },
+   "options": {}
   }
  ],
  "templating": {
