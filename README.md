@@ -1,13 +1,24 @@
 # grafana-dashboards
 
-Grafana dashboards as JSON, provisioned from a clone of this repo. Edit the
-JSON (or edit in the UI, export, paste back — provisioned dashboards are
-read-only in the UI), push, `git pull` on the Grafana host; the file provider
-re-reads every 10 s.
+Dashboards as code. `gen.py` is the source, `poco.json` is build output —
+don't hand-edit the JSON, don't edit in the UI (provisioned dashboards are
+read-only there anyway).
+
+```sh
+python3 gen.py && git commit -am "..." && git push
+git -C ~/monitoring/dashboards pull      # on the Grafana host; file provider re-reads within 10 s
+```
 
 ```txt
-poco.json    the Poco: probes, cert, alerts, haproxy traffic per backend, per-app anubis, cpu/load/memory, battery/thermal, storage
+gen.py       panel definitions; CHAIN + EDGES at the top declare the service graph
+poco.json    generated: probes, cert, alerts, service chain, haproxy traffic per backend,
+             per-app anubis, cpu/load/memory, battery/thermal, storage, fuse latency
 ```
+
+The service chain is a Canvas panel built from `CHAIN`/`EDGES`: box colour
+from a 0/1 query, req/min printed inside, arrows from the edge list. Declared,
+not discovered — no tracing involved, and the topology only changes when
+`~/haproxy.d` does. Adding a service = one line in `CHAIN`, one in `EDGES`.
 
 Provisioning (see `sandravwc/monitoring`, `deploy/grafana/provisioning/dashboards/`):
 
