@@ -1,17 +1,32 @@
 # grafana-dashboards
 
-Dashboards as code. `gen.py` is the source, `poco.json` is build output —
-don't hand-edit the JSON, don't edit in the UI (provisioned dashboards are
-read-only there anyway).
+Dashboards as code. `gen.py` is the source, JSON is build output (gitignored,
+generated where Grafana runs). No UI editing; provisioned dashboards are
+read-only there anyway.
 
 ```sh
-python3 gen.py && git commit -am "..." && git push
-git -C ~/monitoring/dashboards pull      # on the Grafana host; file provider re-reads within 10 s
+./dev                              # watch gen.py: every save regenerates + copies poco.json, live in ~10 s
+git commit -am "..." && git push   # pushes to github and the phone; post-receive hook checks out + runs gen.py
+```
+
+Reload the browser tab after a change; Grafana does not hot-swap an open
+dashboard.
+
+Phone setup (once):
+
+```sh
+git init --bare ~/git/grafana-dashboards.git
+cp deploy/post-receive ~/git/grafana-dashboards.git/hooks/     # from a checkout
+# workstation: push to both
+git remote set-url --add --push origin https://github.com/sandravwc/grafana-dashboards.git
+git remote set-url --add --push origin poco_f5_pro-phone-hyperos:git/grafana-dashboards.git
 ```
 
 ```txt
 gen.py       panel definitions; CHAIN + EDGES at the top declare the service graph
-poco.json    generated: probes, cert, alerts, service chain, haproxy traffic per backend,
+dev          save-to-deploy loop
+deploy/      post-receive hook for the phone
+poco.json    generated (not in git): probes, cert, alerts, service chain, haproxy traffic per backend,
              per-app anubis, cpu/load/memory, battery/thermal, storage, fuse latency
 ```
 

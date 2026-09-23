@@ -1,0 +1,10 @@
+#!/bin/sh
+# Save gen.py -> regenerated and live in grafana (~10 s, then reload the browser tab). No commit. Ctrl-C to stop.
+# When happy: git commit -am ... && git push   (push deploys too, see deploy/post-receive)
+cd "$(dirname "$0")"
+last=
+while sleep 1; do
+    m=$(stat -c %Y gen.py) && [ "$m" != "$last" ] || continue
+    last=$m
+    python3 gen.py && scp -q poco.json poco_f5_pro-phone-hyperos:monitoring/dashboards/poco.json && echo "live $(date +%T)"
+done
