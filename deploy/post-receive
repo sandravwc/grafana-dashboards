@@ -1,9 +1,0 @@
-#!/data/data/com.termux/files/usr/bin/sh
-# Phone side: ~/git/grafana-dashboards.git/hooks/post-receive. On push: check out, generate, grafana's file provider reloads.
-set -e
-dst=$HOME/monitoring/dashboards
-rev=$(git rev-parse --short master)    # before cd: GIT_DIR is relative in hooks
-mkdir -p $dst
-git --work-tree=$dst checkout -f master
-cd $dst && python3 gen.py
-echo "deployed $rev -> $dst"
